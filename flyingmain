@@ -1,0 +1,54 @@
+using UnityEngine;
+
+public class PlayerFlyController : MonoBehaviour
+{
+    [Header("Flying Settings")]
+    public float flySpeed = 20f;
+    public float flightDuration = 5f;
+
+    [Header("Double-Tap Settings")]
+    public float doubleTapTime = 0.3f;
+
+    private Rigidbody rb;
+    private bool isFlying = false;
+    private float flightTimer = 0f;
+    private float lastTapTime = 0f;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
+    void Update()
+    {
+        // Double-space to toggle flying
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            float timeSinceLastTap = Time.time - lastTapTime;
+            if (timeSinceLastTap <= doubleTapTime)
+            {
+                ToggleFlyMode();
+            }
+            lastTapTime = Time.time;
+        }
+
+        if (isFlying)
+        {
+            flightTimer -= Time.deltaTime;
+            if (flightTimer <= 0)
+            {
+                isFlying = false;
+            }
+
+            // Fly forward (based on camera or player direction)
+            Vector3 direction = transform.forward + Vector3.up * 0.3f;
+            rb.velocity = direction.normalized * flySpeed;
+        }
+    }
+
+    void ToggleFlyMode()
+    {
+        isFlying = true;
+        flightTimer = flightDuration;
+    }
+}
